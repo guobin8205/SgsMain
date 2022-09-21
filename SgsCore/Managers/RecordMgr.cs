@@ -1,6 +1,8 @@
-﻿using System;
+using System;
 using System.Text;
 using Common.Extensions.SpanExt;
+using SgsCore.Managers.Record;
+using SgsCore.Network.ProtocolsNew;
 
 namespace SgsCore.Managers
 {
@@ -19,32 +21,23 @@ namespace SgsCore.Managers
 
         public static void ReadRecord(ReadOnlySpan<byte> buff)
         {
-            sbyte len = buff.MoveReadSByte();
-
-            Console.WriteLine(len);
-
-            Console.WriteLine((Encoding.UTF8.GetString(buff.MoveReadBytes((int)len))));
-            ReadRecord2(buff);
-        }
-
-        public static void ReadRecord2(ReadOnlySpan<byte> buff)
-        {
-
-            sbyte len = buff.MoveReadSByte();
-
-            Console.WriteLine(len);
-
-            Console.WriteLine((Encoding.UTF8.GetString(buff.MoveReadBytes((int)len))));
+            RecordData recordData = new RecordData();
+            recordData.Decode(ref buff);
         }
 
         public static void Write()
         {
             var mem = new byte[1000];
             Span<byte> buff = new Span<byte>(mem);
-            buff.MoveWrite(13);
-            buff.MoveWrite(12);
-            buff.MoveWrite(11);
-            Console.WriteLine(Encoding.UTF8.GetString(buff.ToArray()));
+            ProtocolHeader h1 = new ProtocolHeader();
+            h1.id = 333;
+            h1.size = 444;
+            h1.userId = 300;
+            buff.MoveWrite<ProtocolHeader>(h1);
+            Span<byte> buffData = new Span<byte>(mem, 0, mem.Length - buff.ToArray().Length);
+            var head = buffData.MoveReadStruct<ProtocolHeader>();
+            Console.WriteLine(buffData.Length);
+            Console.WriteLine(Encoding.UTF8.GetString(buffData.ToArray()));
         }
     }
 }

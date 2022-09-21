@@ -7,6 +7,13 @@ namespace Common.Extensions.SpanExt
 {
     public static partial class SpanUtils
     {
+        public static Encoding EncodingGBK;
+        static SpanUtils()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            EncodingGBK = Encoding.GetEncoding("GB18030");
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe SByte ReadSByte(Span<byte> span) => SpanUtils.ReadSByte(span, out _);
 
@@ -1135,6 +1142,52 @@ namespace Common.Extensions.SpanExt
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadString(ref Span<byte> span, int lensize, Encoding enc, out int length)
+        {
+            int datalen = 0;
+            switch (lensize)
+            {
+                case 2:
+                    datalen = (int)SpanUtils.MoveReadShort(ref span, out _);
+                    length = 2 + datalen;
+                    break;
+                case 4:
+                    datalen = (int)SpanUtils.MoveReadInt(ref span, out _);
+                    length = 4 + datalen;
+                    break;
+                case 1:
+                default:
+                    datalen = (int)SpanUtils.MoveReadSByte(ref span, out _);
+                    length = 1 + datalen;
+                    break;
+            }
+            var ret = span.Slice(0, datalen).ToArray();
+            span = span.Slice(length);
+            return enc.GetString(ret);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadString(ref ReadOnlySpan<byte> span, int lensize, Encoding enc, out int length)
+        {
+            switch (lensize)
+            {
+                case 2:
+                    length = (int)SpanUtils.MoveReadShort(ref span, out _);
+                    break;
+                case 4:
+                    length = (int)SpanUtils.MoveReadInt(ref span, out _);
+                    break;
+                case 1:
+                default:
+                    length = (int)SpanUtils.MoveReadSByte(ref span, out _);
+                    break;
+            }
+            var ret = span.Slice(0, length).ToArray();
+            span = span.Slice(length);
+            return enc.GetString(ret);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Write(Span<byte> span, SByte value) => SpanUtils.Write(span, value, out _);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1514,6 +1567,17 @@ namespace Common.Extensions.SpanExt
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void MoveWriteFixString(ref Span<byte> span, string value, int length, Encoding enc)
+        {
+            byte[] buf = new byte[length];
+            Span<byte> buffer = new Span<byte>(buf);
+            byte[] tmp = enc.GetBytes(value);
+            buffer.Write(tmp);
+            //buffer.CopyTo(span);
+            span = span.Slice(length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MoveWrite(ref Span<byte> span, ReadOnlySpan<byte> value) => SpanUtils.MoveWrite(ref span, value, out _);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1522,6 +1586,52 @@ namespace Common.Extensions.SpanExt
             value.CopyTo(span);
             length = value.Length;
 
+            span = span.Slice(length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T MoveReadStruct<T>(ref Span<byte> span) where T : struct => SpanUtils.MoveReadStruct<T>(ref span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T MoveReadStruct<T>(ref Span<byte> span, out int length) where T : struct
+        {
+            int size = Marshal.SizeOf<T>();
+            length = size;
+            if (span.Length < size)
+            {
+                return default(T);
+            }
+            var obj = MemoryMarshal.Read<T>(span);
+            span = span.Slice(length);
+            return obj;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T MoveReadStruct<T>(ref ReadOnlySpan<byte> span) where T : struct => SpanUtils.MoveReadStruct<T>(ref span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T MoveReadStruct<T>(ref ReadOnlySpan<byte> span, out int length) where T : struct
+        {
+            int size = Marshal.SizeOf<T>();
+            length = size;
+            if (span.Length < size)
+            {
+                return default(T);
+            }
+            var obj = MemoryMarshal.Read<T>(span);
+            span = span.Slice(length);
+            return obj;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void MoveWrite<T>(ref Span<byte> span, T obj) where T : struct => SpanUtils.MoveWrite(ref span, obj, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe void MoveWrite<T>(ref Span<byte> span, T obj, out int length) where T : struct
+        {
+            T value = (T)obj;
+            length = Marshal.SizeOf<T>();
+            MemoryMarshal.Write<T>(span, ref value);
             span = span.Slice(length);
         }
     }

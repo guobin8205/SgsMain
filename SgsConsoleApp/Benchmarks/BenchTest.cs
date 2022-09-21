@@ -4,13 +4,13 @@ using SgsCore.Managers;
 
 namespace SgsConsoleApp.Benchmarks
 {
+    [MemoryDiagnoser]
     public class BenchTest
     {
         [Benchmark]
-        public async Task TestAsync()
+        public void TestAsync()
         {
-            var buff = await RecordMgr.LoadFileAsync(@"demo.bin");
-            Console.WriteLine(buff.Length);
+            RecordMgr.Write();
         }
     }
 }

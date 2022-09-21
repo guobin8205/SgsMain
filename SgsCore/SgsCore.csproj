@@ -16,13 +16,7 @@
     <None Remove="Managers\Record\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GameSystem\" />
-    <Folder Include="Network\" />
-    <Folder Include="Network\Protocols\" />
-    <Folder Include="Network\Protocols\Game\" />
     <Folder Include="Utils\" />
-    <Folder Include="Managers\" />
-    <Folder Include="Managers\Record\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />

@@ -2,17 +2,22 @@
 using System;
 using System.Text;
 using BenchmarkDotNet.Running;
+using Common.DI;
 using Common.Extensions.SpanExt;
+using HotFix.Protocol;
+using LightInject;
 using SgsConsoleApp.Benchmarks;
 using SgsCore.Managers;
+using SgsCore.Network.Protocols;
+
+//Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
 Console.WriteLine("Hello, World!");
 
-//var summary = BenchmarkRunner.Run<BenchTest>();
+var summary = BenchmarkRunner.Run<BenchCodec>();
 
+//ReadOnlyMemory<byte> buff = await RecordMgr.LoadFileAsync(@"demo.bin");
+//RecordMgr.ReadRecord(buff.Span);
 
-ReadOnlyMemory<byte> buff = await RecordMgr.LoadFileAsync(@"demo.bin");
-RecordMgr.ReadRecord(buff.Span);
-
-RecordMgr.Write();
+//RecordMgr.Write();
 //Span<byte> bufferSpan = buff.AsSpan<byte>();
