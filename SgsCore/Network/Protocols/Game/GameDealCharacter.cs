@@ -41,7 +41,7 @@ namespace HotFix.Protocol
         public byte type;
         public uint timeOut;
         public ushort vip_card_cnt;
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             base.ReadParams();
             type = ReadByte();

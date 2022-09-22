@@ -31,7 +31,7 @@ namespace HotFix.Protocol
         public short shield;        //护甲
 
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             seatId = ReadByte();
             hp = ReadInt();

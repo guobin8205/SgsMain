@@ -49,7 +49,7 @@ namespace HotFix.Protocol
         /// </summary>
         public List<uint> data = new List<uint>();
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             base.ReadParams();
             fromZone = ReadByte();

@@ -13,7 +13,7 @@ namespace HotFix.Protocol
 
         public byte curSeatId;    //当前阶段的seatID
         public byte phase;        //当前阶段
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             curSeatId = ReadByte();
             phase = ReadByte();

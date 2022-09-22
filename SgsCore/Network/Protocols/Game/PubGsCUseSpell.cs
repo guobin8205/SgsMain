@@ -33,7 +33,7 @@ namespace HotFix.Protocol
 
 		}
 
-		protected override void ReadParams()
+        public override void ReadParams()
         {
 			srcSeatId = ReadByte();
 			destCount = ReadByte();

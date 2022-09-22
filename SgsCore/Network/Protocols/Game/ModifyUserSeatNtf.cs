@@ -27,7 +27,7 @@ namespace HotFix.Protocol
         public uint Model;
         public uint Section;
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             IsGameBegin = ReadBool();
             SeatInfos = new List<TSeatInfo>();

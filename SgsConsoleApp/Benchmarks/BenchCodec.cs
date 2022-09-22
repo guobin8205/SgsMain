@@ -16,44 +16,47 @@ namespace SgsConsoleApp.Benchmarks
         private SgsCore.Network.ProtocolsNew.Game.PubGsCMoveCard moveCard2;
         private HotFix.Protocol.ClientLoginReq login1;
         private SgsCore.Network.ProtocolsNew.ClientLoginReq login2;
-        private byte[] buffer = null;
+        private byte[] buf = null;
         [GlobalSetup]
         public void Init()
         {
             moveCard1 = new HotFix.Protocol.PubGsCMoveCard();
             moveCard2 = new SgsCore.Network.ProtocolsNew.Game.PubGsCMoveCard();
-            buffer = new byte[15] { 2,9,0,0,0,255,0,255,255,0,0,160,0,0,0};
+            buf = new byte[15] { 2,9,0,0,0,255,0,255,255,0,0,160,0,0,0};
 
             login1 = new HotFix.Protocol.ClientLoginReq();
             login2 = new SgsCore.Network.ProtocolsNew.ClientLoginReq();
+
         }
 
 
-        [Benchmark]
-        public void TestMoveCard1()
-        {
-            moveCard1.SetBytes(buffer, buffer.Length, 21209);
-        }
+        //[Benchmark]
+        //public void TestMoveCard1()
+        //{
+        //    moveCard1.SetBytes(buffer, buffer.Length, 21209);
+        //}
 
 
-        [Benchmark]
-        public void TestMoveCard2()
-        {
-            ReadOnlySpan<byte> buff = new ReadOnlySpan<byte>(buffer);
-            moveCard2.Decode(ref buff);
-        }
+        //[Benchmark]
+        //public void TestMoveCard2()
+        //{
+        //    ReadOnlySpan<byte> buff = new ReadOnlySpan<byte>(buffer);
+        //    moveCard2.Decode(ref buff);
+        //}
 
         [Benchmark]
         public void TestLogin1()
         {
             login1.WriteParams();
+            login1.ReadParams();
         }
 
 
         [Benchmark]
         public void TestLogin2()
         {
-            login2.Encode();
+            ReadOnlySpan<byte> buffer = login2.Encode();
+            login2.Decode(ref buffer);
         }
     }
 }

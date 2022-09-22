@@ -32,7 +32,7 @@ namespace HotFix.Protocol
 			Write(datas.ToArray());
 		}
 
-		protected override void ReadParams()
+        public override void ReadParams()
         {
 			srcSeatId = ReadByte();
 			cardId = ReadUInt();

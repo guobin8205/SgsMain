@@ -19,7 +19,7 @@ namespace HotFix.Protocol
         byte paramcnt;
         List<uint> paramDatas;
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             timeOut = ReadUInt();
             triggerSeatId = ReadByte();

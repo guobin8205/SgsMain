@@ -59,7 +59,7 @@ namespace HotFix.Protocol
         public byte dataId;
         public uint data;
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             seatId = ReadByte();
             dataId = ReadByte();

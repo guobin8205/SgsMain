@@ -52,7 +52,7 @@ namespace HotFix.Protocol
         public byte dataCnt;
         public List<int> datas;
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             seatId = ReadByte();
             isSpell = ReadBool();

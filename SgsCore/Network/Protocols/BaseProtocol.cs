@@ -124,7 +124,7 @@ namespace SgsCore.Network.Protocols
                 return mClientID;
             }
         }
-        protected virtual void ReadParams()
+        public virtual void ReadParams()
         {
 
         }

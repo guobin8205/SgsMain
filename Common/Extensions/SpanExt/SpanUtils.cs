@@ -1187,6 +1187,21 @@ namespace Common.Extensions.SpanExt
             return enc.GetString(ret);
         }
 
+        public static unsafe string MoveReadFixedString(ref ReadOnlySpan<byte> span, int length, Encoding enc)
+        {
+            var ret = span.Slice(0, length).ToArray();
+            span = span.Slice(length);
+            return enc.GetString(ret);
+        }
+
+        public static unsafe string MoveReadFixedString(ref Span<byte> span, int length, Encoding enc)
+        {
+            var ret = span.Slice(0, length).ToArray();
+            span = span.Slice(length);
+            //enc.GetString(ret);
+            return "";
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Write(Span<byte> span, SByte value) => SpanUtils.Write(span, value, out _);
 
@@ -1567,13 +1582,10 @@ namespace Common.Extensions.SpanExt
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void MoveWriteFixString(ref Span<byte> span, string value, int length, Encoding enc)
+        public static unsafe void MoveWriteFixString(ref Span<byte> span, in string value, int length, Encoding enc)
         {
-            byte[] buf = new byte[length];
-            Span<byte> buffer = new Span<byte>(buf);
-            byte[] tmp = enc.GetBytes(value);
-            buffer.Write(tmp);
-            //buffer.CopyTo(span);
+            Span<byte> buffer = stackalloc byte[length];
+            buffer.Write(enc.GetBytes(value));
             span = span.Slice(length);
         }
 

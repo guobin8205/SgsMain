@@ -12,8 +12,8 @@ namespace HotFix.Protocol
         /// <summary>
         /// 每个位置的先后顺序
         /// </summary>
-        public List<uint> seats=new List<uint>(); 
-        protected override void ReadParams()
+        public List<uint> seats=new List<uint>();
+        public override void ReadParams()
         {
             base.ReadParams();
             count = ReadByte();

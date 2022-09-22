@@ -31,7 +31,7 @@ namespace HotFix.Protocol
         /// 设置武将列表，可设置多个座位的武将信息
         /// </summary>
         public List<CharaInfo> charaInfo;
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             base.ReadParams();
             count = ReadByte();

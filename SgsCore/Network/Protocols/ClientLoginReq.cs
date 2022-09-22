@@ -1,6 +1,7 @@
 ﻿using SgsCore.Network.Protocols;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,22 @@ namespace HotFix.Protocol
         public bool Visible = true;        //是否显示登录
         public string flistVer = "4.0.8|110110|6";
         public string uuid = "UUID";
+
+
+        public override void ReadParams()
+        {
+            ReadUShort();
+            LoginType = ReadUShort();
+            Username = ReadString(48);
+            Password = ReadString(48);
+            NumberAccount = ReadString(40);
+            LoginFrom = ReadUShort();
+            Reserve = ReadUShort();
+            Visible = ReadBool();
+            flistVer = ReadString(32);
+            uuid = ReadString(65);
+        }
+
         public override void WriteParams()
         {
             Write((ushort)270);

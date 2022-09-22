@@ -562,6 +562,20 @@ namespace Common.Extensions.SpanExt
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe string MoveReadStringGBK(ref this ReadOnlySpan<byte> span) => SpanUtils.MoveReadString(ref span, 1, SpanUtils.EncodingGBK, out _);
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadFixedString(ref this ReadOnlySpan<byte> span, int length) => SpanUtils.MoveReadFixedString(ref span, length, Encoding.UTF8);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadFixedStringGBK(ref this ReadOnlySpan<byte> span, int length) => SpanUtils.MoveReadFixedString(ref span, length, SpanUtils.EncodingGBK);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadFixedString(ref this Span<byte> span, int length) => SpanUtils.MoveReadFixedString(ref span, length, Encoding.UTF8);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe string MoveReadFixedStringGBK(ref this Span<byte> span, int length) => SpanUtils.MoveReadFixedString(ref span, length, SpanUtils.EncodingGBK);
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Span<byte> MoveReadSpan(ref this Span<byte> span, int length) => SpanUtils.MoveReadSpan(ref span, length);
 
@@ -782,7 +796,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe void MoveWrite<T>(ref this Span<byte> span, T obj) where T : struct => SpanUtils.MoveWrite(ref span, obj, out _);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void MoveWrite(ref this Span<byte> span, string value, int length) => SpanUtils.MoveWriteFixString(ref span, value, length, Encoding.UTF8);
+        public static unsafe void MoveWrite(ref this Span<byte> span, in string value, int length) => SpanUtils.MoveWriteFixString(ref span, in value, length, Encoding.UTF8);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MoveWriteGBK(ref this Span<byte> span, string value, int length) => SpanUtils.MoveWriteFixString(ref span, value, length, SpanUtils.EncodingGBK);

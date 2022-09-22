@@ -75,7 +75,7 @@ namespace HotFix.Protocol
         ushort dataCnt;
         public List<uint> datas;
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             timeOut = ReadUInt();
             optSeatId = ReadByte();

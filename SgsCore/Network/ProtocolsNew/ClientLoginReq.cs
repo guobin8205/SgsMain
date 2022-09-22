@@ -1,7 +1,10 @@
 ﻿using Common.Extensions.SpanExt;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,23 +22,47 @@ namespace SgsCore.Network.ProtocolsNew
         public string flistVer = "4.0.8|110110|6";
         public string uuid = "UUID";
 
+        public byte[] data;
+
         public override Span<byte> Encode()
         {
-            byte[] buf = new byte[300];
-            Span<byte> buffer = new Span<byte>(buf);
-            buffer.MoveWrite((ushort)270);
-            buffer.MoveWrite(LoginType);
-            buffer.MoveWrite(Username, 48);
-            buffer.MoveWrite(Password, 48);
-            buffer.MoveWrite(NumberAccount, 40);
-            buffer.MoveWrite(LoginFrom);
-            buffer.MoveWrite(Reserve);
-            buffer.MoveWrite(Visible);
-            buffer.MoveWrite(flistVer, 32);
-            buffer.MoveWrite(uuid, 65);
+            Span<byte> buffer = stackalloc byte[1024];
+            Span<byte> writer = buffer;
+            writer.MoveWrite((ushort)270);
+            writer.MoveWrite(LoginType);
+            writer.MoveWrite(Username, 48);
+            writer.MoveWrite(Password, 48);
+            writer.MoveWrite(NumberAccount, 40);
+            writer.MoveWrite(LoginFrom);
+            writer.MoveWrite(Reserve);
+            writer.MoveWrite(Visible);
+            writer.MoveWrite(flistVer, 32);
+            writer.MoveWrite(uuid, 65);
+            buffer.Slice(0, writer.Length);
 
-            //Span<byte> ret = new Span<byte>(buf, 0, buf.Length - buffer.Length);
-            return null;
+            int datalen = buffer.Length - writer.Length;
+            byte[] bytes = new byte[datalen];
+            Span<byte> ret = new Span<byte>(bytes);
+            buffer.Slice(0, datalen).CopyTo(ret);
+            return ret;
+
+            //return null;
+        }
+
+        public override bool Decode(ref ReadOnlySpan<byte> buffer)
+        {
+            buffer.MoveReadUShort();
+            LoginType = buffer.MoveReadUShort();
+            Username = buffer.MoveReadFixedString(48);
+            Password = buffer.MoveReadFixedString(48);
+            NumberAccount = buffer.MoveReadFixedString(40);
+            LoginFrom = buffer.MoveReadUShort();
+            Reserve = buffer.MoveReadUShort();
+            Visible = buffer.MoveReadBool();
+            flistVer = buffer.MoveReadFixedString(32);
+            uuid = buffer.MoveReadFixedString(65);
+
+            return true;
         }
     }
 }

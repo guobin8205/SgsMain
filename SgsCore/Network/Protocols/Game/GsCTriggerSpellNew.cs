@@ -63,7 +63,7 @@ namespace HotFix.Protocol
         public byte uTriggerSpellCnt;
         public List<TriggerParam> triggerParam;//被触发的技能 变长数据
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             timeOut = ReadUInt();
             triggerSeatId = ReadByte();

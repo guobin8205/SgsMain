@@ -23,7 +23,7 @@ namespace HotFix.Protocol
         //event_id: 1 (王战比赛在开始的时候可能需要暂停)
         public uint event_id;
         public byte length;
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             base.ReadParams();
             pause = ReadByte();

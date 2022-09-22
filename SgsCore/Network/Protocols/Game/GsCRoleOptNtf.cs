@@ -22,7 +22,7 @@ namespace HotFix.Protocol
         public byte seatId;           //操作的人的seatId
         public byte optType;          //要做操作的类型，通过枚举EmOpt中定义
         public uint param;           //用户定义数据
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             timeOut = ReadUInt();
             seatId = ReadByte();

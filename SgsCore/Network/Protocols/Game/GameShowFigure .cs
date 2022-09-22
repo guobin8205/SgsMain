@@ -32,7 +32,7 @@ namespace HotFix.Protocol
         /// </summary>
         public byte type;//类型
         public byte param = 0;
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             base.ReadParams();
             figure = ReadByte();

@@ -11,7 +11,7 @@ namespace HotFix.Protocol
     {
         public byte seatId;    //当前阶段的seatID
 
-        protected override void ReadParams()
+        public override void ReadParams()
         {
             seatId = ReadByte();
 
