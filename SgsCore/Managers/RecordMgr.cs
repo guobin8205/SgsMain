@@ -24,21 +24,6 @@ namespace SgsCore.Managers
             RecordData recordData = new RecordData();
             recordData.Decode(ref buff);
         }
-
-        public static void Write()
-        {
-            var mem = new byte[1000];
-            Span<byte> buff = new Span<byte>(mem);
-            ProtocolHeader h1 = new ProtocolHeader();
-            h1.id = 333;
-            h1.size = 444;
-            h1.userId = 300;
-            buff.MoveWrite<ProtocolHeader>(h1);
-            Span<byte> buffData = new Span<byte>(mem, 0, mem.Length - buff.ToArray().Length);
-            var head = buffData.MoveReadStruct<ProtocolHeader>();
-            Console.WriteLine(buffData.Length);
-            Console.WriteLine(Encoding.UTF8.GetString(buffData.ToArray()));
-        }
     }
 }
 

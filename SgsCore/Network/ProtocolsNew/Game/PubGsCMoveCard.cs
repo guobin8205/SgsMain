@@ -72,7 +72,7 @@ namespace SgsCore.Network.ProtocolsNew.Game
             return true;
         }
 
-        public virtual byte[] Encode()
+        public override Span<byte> Encode()
         {
             throw new NotImplementedException();
         }
