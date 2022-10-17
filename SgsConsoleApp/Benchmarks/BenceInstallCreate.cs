@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using Common.DI;
 using HotFix.Protocol;
-using LightInject;
 using Microsoft.Extensions.DependencyInjection;
 using SgsCore.Network.Protocols;
 using System;
@@ -22,14 +21,14 @@ namespace SgsConsoleApp.Benchmarks
         private static Delegate _delegate = Expression.Lambda(Expression.New(_type)).Compile();
         private static Func<object> _func = Expression.Lambda<Func<object>>(Expression.New(_type)).Compile();
         private static Func<PubGsCMoveCard>  _typedFunc = Expression.Lambda<Func<PubGsCMoveCard>>(Expression.New(_type)).Compile();
-        private static LightInject.ServiceContainer container = new LightInject.ServiceContainer();
+        //private static LightInject.ServiceContainer container = new LightInject.ServiceContainer();
 
         private static MinimalContainer minContainer = new MinimalContainer();
 
         [GlobalSetup]
         public void Init()
         {
-            container.Register<IProtocol, PubGsCMoveCard>("PubGsCMoveCard");
+            //container.Register<IProtocol, PubGsCMoveCard>("PubGsCMoveCard");
             minContainer.Register<IProtocol, PubGsCMoveCard > ();
         }
 
@@ -40,12 +39,12 @@ namespace SgsConsoleApp.Benchmarks
             return instance as PubGsCMoveCard;
         }
 
-        [Benchmark]
-        public PubGsCMoveCard Container()
-        {
-            var instance = container.GetInstance<IProtocol>("PubGsCMoveCard");
-            return instance as PubGsCMoveCard;
-        }
+        //[Benchmark]
+        //public PubGsCMoveCard Container()
+        //{
+        //    var instance = container.GetInstance<IProtocol>("PubGsCMoveCard");
+        //    return instance as PubGsCMoveCard;
+        //}
 
         [Benchmark]
         public PubGsCMoveCard New()

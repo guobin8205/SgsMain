@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Common.Extensions.SpanExt;
 using SgsCore.Managers.Record;
 using SgsCore.Network.ProtocolsNew;
@@ -8,7 +10,7 @@ namespace SgsCore.Managers
 {
     public static class RecordMgr
     {
-        public static async ValueTask<ReadOnlyMemory<byte>> LoadFileAsync(string filename)
+        public static async Task<ReadOnlyMemory<byte>> LoadFileAsync(string filename)
         {
             byte[] buffer;
             using (FileStream SourceStream = File.Open(filename, FileMode.Open))

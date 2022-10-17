@@ -1,16 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System;
-using System.Text;
-using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
-using Common.DI;
-using Common.Extensions.SpanExt;
-using HotFix.Protocol;
-using LightInject;
 using SgsConsoleApp.Benchmarks;
-using SgsCore.Managers;
 using SgsCore.Network;
-using SgsCore.Network.Protocols;
 
 //Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -23,12 +14,16 @@ using SgsCore.Network.Protocols;
 //RecordMgr.ReadRecord(buff.Span);
 
 //ReadOnlySpan<byte> bufferSpan = buff.Span;
+
+
 string address = "10.225.21.175";
 int port = 41000;
 var client = new GameTcpClient(address, port);
 Console.Write("Client connecting...");
 client.ConnectAsync();
 Console.WriteLine("Done!");
+
+
 
 Console.WriteLine("Press Enter to stop the client or '!' to reconnect the client...");
 for (; ; )

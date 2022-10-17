@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SgsCore.Network
 {
     /// <summary>
-    /// Dynamic byte buffer
+    /// 动态缓存组件
     /// </summary>
     public class Buffer
     {
@@ -17,72 +17,64 @@ namespace SgsCore.Network
         private long _offset;
 
         /// <summary>
-        /// Is the buffer empty?
+        /// 缓存为空
         /// </summary>
         public bool IsEmpty => (_data == null) || (_size == 0);
         /// <summary>
-        /// Bytes memory buffer
+        /// 缓存数据
         /// </summary>
         public byte[] Data => _data;
         /// <summary>
-        /// Bytes memory buffer capacity
+        /// 缓存容量
         /// </summary>
         public long Capacity => _data.Length;
         /// <summary>
-        /// Bytes memory buffer size
+        /// 缓存数据大小
         /// </summary>
         public long Size => _size;
         /// <summary>
-        /// Bytes memory buffer offset
+        /// 缓存偏移值
         /// </summary>
         public long Offset => _offset;
 
         /// <summary>
-        /// Buffer indexer operator
+        /// 索引操作实现
         /// </summary>
         public byte this[long index] => _data[index];
 
         /// <summary>
-        /// Initialize a new expandable buffer with zero capacity
+        /// 创建空容量的缓存对象
         /// </summary>
         public Buffer() { _data = new byte[0]; _size = 0; _offset = 0; }
         /// <summary>
-        /// Initialize a new expandable buffer with the given capacity
+        /// 创建指定容量空数据的缓存对象
         /// </summary>
         public Buffer(long capacity) { _data = new byte[capacity]; _size = 0; _offset = 0; }
         /// <summary>
-        /// Initialize a new expandable buffer with the given data
+        /// 创建指定数据的缓存对象
         /// </summary>
         public Buffer(byte[] data) { _data = data; _size = data.Length; _offset = 0; }
 
-        #region Memory buffer methods
-
+        #region 缓存操作方法
         /// <summary>
-        /// Get a span of bytes from the current buffer
+        /// 转换Span对象
         /// </summary>
         public Span<byte> AsSpan()
         {
             return new Span<byte>(_data, (int)_offset, (int)_size);
         }
 
-        /// <summary>
-        /// Get a string from the current buffer
-        /// </summary>
         public override string ToString()
         {
             return ExtractString(0, _size);
         }
 
-        // Clear the current buffer and its offset
         public void Clear()
         {
             _size = 0;
             _offset = 0;
         }
 
-        /// <summary>
-        /// Extract the string from buffer of the given offset and size
-        /// </summary>
         public string ExtractString(long offset, long size)
         {
             Debug.Assert(((offset + size) <= Size), "Invalid offset & size!");
@@ -92,9 +84,6 @@ namespace SgsCore.Network
             return Encoding.UTF8.GetString(_data, (int)offset, (int)size);
         }
 
-        /// <summary>
-        /// Remove the buffer of the given offset and size
-        /// </summary>
         public void Remove(long offset, long size)
         {
             Debug.Assert(((offset + size) <= Size), "Invalid offset & size!");
@@ -114,7 +103,7 @@ namespace SgsCore.Network
         }
 
         /// <summary>
-        /// Reserve the buffer of the given capacity
+        /// 动态扩展容量
         /// </summary>
         public void Reserve(long capacity)
         {
@@ -130,7 +119,6 @@ namespace SgsCore.Network
             }
         }
 
-        // Resize the current buffer
         public void Resize(long size)
         {
             Reserve(size);
@@ -139,20 +127,10 @@ namespace SgsCore.Network
                 _offset = _size;
         }
 
-        // Shift the current buffer offset
+        // 调整游标
         public void Shift(long offset) { _offset += offset; }
-        // Unshift the current buffer offset
         public void Unshift(long offset) { _offset -= offset; }
 
-        #endregion
-
-        #region Buffer I/O methods
-
-        /// <summary>
-        /// Append the single byte
-        /// </summary>
-        /// <param name="value">Byte value to append</param>
-        /// <returns>Count of append bytes</returns>
         public long Append(byte value)
         {
             Reserve(_size + 1);
@@ -161,11 +139,6 @@ namespace SgsCore.Network
             return 1;
         }
 
-        /// <summary>
-        /// Append the given buffer
-        /// </summary>
-        /// <param name="buffer">Buffer to append</param>
-        /// <returns>Count of append bytes</returns>
         public long Append(byte[] buffer)
         {
             Reserve(_size + buffer.Length);
@@ -174,13 +147,6 @@ namespace SgsCore.Network
             return buffer.Length;
         }
 
-        /// <summary>
-        /// Append the given buffer fragment
-        /// </summary>
-        /// <param name="buffer">Buffer to append</param>
-        /// <param name="offset">Buffer offset</param>
-        /// <param name="size">Buffer size</param>
-        /// <returns>Count of append bytes</returns>
         public long Append(byte[] buffer, long offset, long size)
         {
             Reserve(_size + size);
@@ -189,11 +155,6 @@ namespace SgsCore.Network
             return size;
         }
 
-        /// <summary>
-        /// Append the given span of bytes
-        /// </summary>
-        /// <param name="buffer">Buffer to append as a span of bytes</param>
-        /// <returns>Count of append bytes</returns>
         public long Append(ReadOnlySpan<byte> buffer)
         {
             Reserve(_size + buffer.Length);
@@ -202,40 +163,7 @@ namespace SgsCore.Network
             return buffer.Length;
         }
 
-        /// <summary>
-        /// Append the given buffer
-        /// </summary>
-        /// <param name="buffer">Buffer to append</param>
-        /// <returns>Count of append bytes</returns>
         public long Append(Buffer buffer) => Append(buffer.AsSpan());
-
-        /// <summary>
-        /// Append the given text in UTF-8 encoding
-        /// </summary>
-        /// <param name="text">Text to append</param>
-        /// <returns>Count of append bytes</returns>
-        public long Append(string text)
-        {
-            int length = Encoding.UTF8.GetMaxByteCount(text.Length);
-            Reserve(_size + length);
-            long result = Encoding.UTF8.GetBytes(text, 0, text.Length, _data, (int)_size);
-            _size += result;
-            return result;
-        }
-
-        /// <summary>
-        /// Append the given text in UTF-8 encoding
-        /// </summary>
-        /// <param name="text">Text to append as a span of characters</param>
-        /// <returns>Count of append bytes</returns>
-        public long Append(ReadOnlySpan<char> text)
-        {
-            int length = Encoding.UTF8.GetMaxByteCount(text.Length);
-            Reserve(_size + length);
-            long result = Encoding.UTF8.GetBytes(text, new Span<byte>(_data, (int)_size, length));
-            _size += result;
-            return result;
-        }
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.Helpers;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -201,7 +202,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single ReadSingle(Span<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -214,7 +215,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single ReadSingle(ReadOnlySpan<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -335,7 +336,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single ReadFloat(Span<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -348,7 +349,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single ReadFloat(ReadOnlySpan<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -758,7 +759,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single MoveReadSingle(ref Span<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -772,7 +773,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single MoveReadSingle(ref ReadOnlySpan<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -906,7 +907,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single MoveReadFloat(ref Span<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -920,7 +921,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe Single MoveReadFloat(ref ReadOnlySpan<byte> span, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            var r = BitConverter.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
+            var r = BitConverterHelper.Int32BitsToSingle(SpanUtils.ReadInt32(span, out _));
 #else
             var i = SpanUtils.ReadInt32(span, out _);
             var r = *(float*)(&i);
@@ -1301,7 +1302,7 @@ namespace Common.Extensions.SpanExt
         public static unsafe void Write(Span<byte> span, Single value, out int length)
         {
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            SpanUtils.Write(span, BitConverter.SingleToInt32Bits(value), out _);
+            SpanUtils.Write(span, BitConverterHelper.SingleToInt32Bits(value), out _);
 #else
             var i = *(int*)(&value);
             SpanUtils.Write(span, i, out _);
@@ -1496,8 +1497,9 @@ namespace Common.Extensions.SpanExt
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MoveWrite(ref Span<byte> span, Single value, out int length)
         {
+            
 #if NETSTANDARD21 || !BEFORENETCOREAPP3
-            SpanUtils.Write(span, BitConverter.SingleToInt32Bits(value), out _);
+            SpanUtils.Write(span, BitConverterHelper.SingleToInt32Bits(value), out _);
 #else
             var i = *(int*)(&value);
             SpanUtils.Write(span, i, out _);
