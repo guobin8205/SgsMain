@@ -275,6 +275,17 @@ namespace Common.Extensions.SpanExt
         public static unsafe ReadOnlySpan<byte> ReadReadOnlySpan(this ReadOnlySpan<byte> span, int length) => SpanUtils.ReadReadOnlySpan(span, length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T? ReadStruct<T>(this Span<byte> span, out int length) where T : struct => SpanUtils.ReadStruct<T>(span, out length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T? ReadStruct<T>(this Span<byte> span) where T : struct => SpanUtils.ReadStruct<T>(span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T ReadStruct<T>(this ReadOnlySpan<byte> span, out int length) where T : struct => SpanUtils.ReadStruct<T>(span, out length);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T ReadStruct<T>(this ReadOnlySpan<byte> span) where T : struct => SpanUtils.ReadStruct<T>(span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Move(ref this Span<byte> span, int length) => span = span.Slice(length);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

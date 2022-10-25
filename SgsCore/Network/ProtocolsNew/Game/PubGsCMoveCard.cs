@@ -76,27 +76,5 @@ namespace SgsCore.Network.ProtocolsNew.Game
         {
             throw new NotImplementedException();
         }
-
-
-        //protected override void WriteParams()
-        //{
-        //    Write(fromZone);
-        //    Write(toZone);
-        //    Write(fromZone);
-        //    Write(toId);
-        //    Write(fromPosition);
-        //    Write(toPosition);
-        //    Write(srcSeatId);
-        //    Write(spellId);
-        //    Write(fromZoneParam);
-        //    Write(toZoneParam);
-        //    Write(cardCnt);
-        //    Write(dataCnt);
-
-        //    for (int i = 0; i < dataCnt; i++)
-        //    {
-        //        Write(data[i]);
-        //    }
-        //}
     }
 }

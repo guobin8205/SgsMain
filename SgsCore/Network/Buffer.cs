@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,8 +15,8 @@ namespace SgsCore.Network
     public class Buffer
     {
         private byte[] _data;
-        private long _size;
-        private long _offset;
+        private int _size;
+        private int _offset;
 
         /// <summary>
         /// 缓存为空
@@ -27,15 +29,17 @@ namespace SgsCore.Network
         /// <summary>
         /// 缓存容量
         /// </summary>
-        public long Capacity => _data.Length;
+        public int Capacity => _data.Length;
         /// <summary>
         /// 缓存数据大小
         /// </summary>
-        public long Size => _size;
+        public int Size => _size;
         /// <summary>
         /// 缓存偏移值
         /// </summary>
-        public long Offset => _offset;
+        public int Offset => _offset;
+
+        public int FreeCapacity => _data.Length - this._offset;
 
         /// <summary>
         /// 索引操作实现
@@ -50,10 +54,6 @@ namespace SgsCore.Network
         /// 创建指定容量空数据的缓存对象
         /// </summary>
         public Buffer(long capacity) { _data = new byte[capacity]; _size = 0; _offset = 0; }
-        /// <summary>
-        /// 创建指定数据的缓存对象
-        /// </summary>
-        public Buffer(byte[] data) { _data = data; _size = data.Length; _offset = 0; }
 
         #region 缓存操作方法
         /// <summary>
@@ -61,7 +61,15 @@ namespace SgsCore.Network
         /// </summary>
         public Span<byte> AsSpan()
         {
-            return new Span<byte>(_data, (int)_offset, (int)_size);
+            return new Span<byte>(_data, 0, (int)_size);
+        }
+        public ReadOnlySpan<byte> AsReadOnlySpan()
+        {
+            return new ReadOnlySpan<byte>(_data, 0, (int)_size);
+        }
+        public ReadOnlySpan<byte> AsReadOnlySpan(int offset, int size)
+        {
+            return new ReadOnlySpan<byte>(_data, offset, size);
         }
 
         public override string ToString()
@@ -84,13 +92,14 @@ namespace SgsCore.Network
             return Encoding.UTF8.GetString(_data, (int)offset, (int)size);
         }
 
-        public void Remove(long offset, long size)
+        public void Remove(int offset, int size)
         {
             Debug.Assert(((offset + size) <= Size), "Invalid offset & size!");
             if ((offset + size) > Size)
                 throw new ArgumentException("Invalid offset & size!", nameof(offset));
 
-            Array.Copy(_data, offset + size, _data, offset, _size - size - offset);
+            //Array.Copy(_data, offset + size, _data, offset, _size - size - offset);
+            Array.Clear(_data, (int)offset, (int)size);
             _size -= size;
             if (_offset >= (offset + size))
                 _offset -= size;
@@ -119,7 +128,7 @@ namespace SgsCore.Network
             }
         }
 
-        public void Resize(long size)
+        public void Resize(int size)
         {
             Reserve(size);
             _size = size;
@@ -128,8 +137,36 @@ namespace SgsCore.Network
         }
 
         // 调整游标
-        public void Shift(long offset) { _offset += offset; }
-        public void Unshift(long offset) { _offset -= offset; }
+        public void AddSize(int size) { _size += size; }
+        public void SubSize(int size) { _size -= size; }
+
+        // 调整游标
+        public void Shift(int offset) { _offset += offset; }
+        public void Unshift(int offset) { _offset -= offset; }
+
+
+        public void InsertAndAdjust(int srcoffset, int srclen, byte[] dst, int dstoffset, int dstlen)
+        {
+            if(srclen != dstlen)
+            {
+                System.Buffer.BlockCopy(_data, srcoffset + dstlen, _data, srcoffset + srclen, _size - srcoffset - srclen);
+            }
+            System.Buffer.BlockCopy(dst, 0, _data, srcoffset, dstlen);
+            _size = _size + dstlen - srclen;
+        }
+
+        public void RemoveAndAdjust(int offset, int size)
+        {
+            if ((offset + size) > Size)
+                throw new ArgumentException("Invalid offset & size!", nameof(offset));
+
+            Array.Clear(_data, offset, size);
+            if (_size - size > 0)
+            {
+                System.Buffer.BlockCopy(_data, offset + size, _data, offset, _size - size);
+            }
+            _size -= size;
+        }
 
         public long Append(byte value)
         {
@@ -147,7 +184,7 @@ namespace SgsCore.Network
             return buffer.Length;
         }
 
-        public long Append(byte[] buffer, long offset, long size)
+        public long Append(byte[] buffer, int offset, int size)
         {
             Reserve(_size + size);
             Array.Copy(buffer, offset, _data, _size, size);

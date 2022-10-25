@@ -544,6 +544,39 @@ namespace Common.Extensions.SpanExt
             return ret;
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T? ReadStruct<T>(Span<byte> span) where T : struct => SpanUtils.ReadStruct<T>(span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T? ReadStruct<T>(Span<byte> span, out int length) where T : struct
+        {
+            int size = Marshal.SizeOf<T>();
+            length = size;
+            if (span.Length < size)
+            {
+                return null;
+            }
+            var obj = MemoryMarshal.Read<T>(span);
+            return obj;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T ReadStruct<T>(ReadOnlySpan<byte> span) where T : struct => SpanUtils.ReadStruct<T>(span, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe T ReadStruct<T>(ReadOnlySpan<byte> span, out int length) where T : struct
+        {
+            int size = Marshal.SizeOf<T>();
+            length = size;
+            if (span.Length < size)
+            {
+                return default(T);
+            }
+            var obj = MemoryMarshal.Read<T>(span);
+            return obj;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe ReadOnlySpan<byte> ReadReadOnlySpan(ReadOnlySpan<byte> span, int length)
         {

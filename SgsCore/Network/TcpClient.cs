@@ -485,7 +485,7 @@ namespace SgsCore.Network
                 {
                     // 从异步事件中接收数据
                     _receiving = true;
-                    _receiveEventArg.SetBuffer(_receiveBuffer.Data, 0, (int)_receiveBuffer.Capacity);
+                    _receiveEventArg.SetBuffer(_receiveBuffer.Data, _receiveBuffer.Offset, _receiveBuffer.Capacity-_receiveBuffer.Offset);
                     if (!Socket.ReceiveAsync(_receiveEventArg))
                         process = ProcessReceive(_receiveEventArg);
                 }
@@ -646,27 +646,28 @@ namespace SgsCore.Network
                 return false;
 
             // 有数据接收
-            long size = e.BytesTransferred;
+            int size = e.BytesTransferred;
             if (size > 0)
             {
                 // 更新统计
                 BytesReceived += size;
+                _receiveBuffer.AddSize(size);
 
                 // 调用数据接收回调
-                OnReceived(_receiveBuffer.Data, 0, size);
+                OnInternalReceived(e);
 
                 // 接收缓存大小检测
-                if (_receiveBuffer.Capacity == size)
+                if (_receiveBuffer.FreeCapacity < _receiveBuffer.Capacity)
                 {
                     // 检查异步接收缓存
-                    if (((2 * size) > OptionReceiveBufferLimit) && (OptionReceiveBufferLimit > 0))
+                    if (((2 * _receiveBuffer.Capacity) > OptionReceiveBufferLimit) && (OptionReceiveBufferLimit > 0))
                     {
                         SendError(SocketError.NoBufferSpaceAvailable);
                         DisconnectAsync();
                         return false;
                     }
 
-                    _receiveBuffer.Reserve(2 * size);
+                    _receiveBuffer.Reserve(2 * _receiveBuffer.Capacity);
                 }
             }
 
@@ -688,6 +689,16 @@ namespace SgsCore.Network
             }
 
             return false;
+        }
+
+        public Func<Buffer, int, bool> OnHandleReceivedData { get; set; }
+        private void OnInternalReceived(SocketAsyncEventArgs e) {
+            int size = e.BytesTransferred;
+            if (this.OnHandleReceivedData?.Invoke(_receiveBuffer, size) == false)
+            {
+                return;
+            }
+            OnReceived(_receiveBuffer.Data, _receiveBuffer.Offset, size);
         }
 
         private bool ProcessSend(SocketAsyncEventArgs e)
