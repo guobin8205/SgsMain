@@ -19,12 +19,12 @@ namespace SgsCore.Network.ProtocolsNew
     {
         public ProtocolHeader header;
 
-        public virtual bool Decode(ref ReadOnlySpan<byte> buffer)
+        public virtual bool Decode(ReadOnlySpan<byte> buffer)
         {
             throw new NotImplementedException();
         }
 
-        public virtual Span<byte> Encode()
+        public virtual void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }

@@ -23,7 +23,7 @@ namespace SgsCore.Managers.Record
         public string title;
         public string comment;
 
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             int offset = buffer.Length;
             version = buffer.MoveReadStringGBK();
@@ -52,7 +52,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -71,7 +71,7 @@ namespace SgsCore.Managers.Record
         public bool allowView;
         public bool is1V1Ban4;
 
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             tableId = buffer.MoveReadInt();
             bDouble = buffer.MoveReadBool();
@@ -87,7 +87,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -110,7 +110,7 @@ namespace SgsCore.Managers.Record
         public string name;
         public int seasonId;
 
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             tableId = buffer.MoveReadInt();
             exType = buffer.MoveReadInt();
@@ -131,7 +131,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -153,7 +153,7 @@ namespace SgsCore.Managers.Record
         public Dictionary<int, UserBaseData> userDatas = new Dictionary<int, UserBaseData>();
         public int selfSeatId;
 
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             matchId = buffer.MoveReadInt();
             matchGameMode = buffer.MoveReadInt();
@@ -164,15 +164,15 @@ namespace SgsCore.Managers.Record
             path = buffer.MoveReadStringGBK();
             isViewer = buffer.MoveReadBool();
             tableRule = new TableRule();
-            tableRule.Decode(ref buffer);
+            tableRule.Decode(buffer);
             tableInfo = new TableInfo();
-            tableInfo.Decode(ref buffer);
+            tableInfo.Decode(buffer);
             playerCount = buffer.MoveReadInt();
             for (int i = 0; i < playerCount; i++)
             {
                 int seatid = buffer.MoveReadInt();
                 var udata = new UserBaseData();
-                udata.Decode(ref buffer);
+                udata.Decode(buffer);
                 userDatas.Add(seatid, udata);
             }
             selfSeatId = buffer.MoveReadInt();
@@ -180,7 +180,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -232,7 +232,7 @@ namespace SgsCore.Managers.Record
         public uint fightBossValue;
         public uint zhanyiValue;
 
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             userId = buffer.MoveReadInt();
             nickname = buffer.MoveReadStringGBK();
@@ -281,7 +281,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -302,12 +302,12 @@ namespace SgsCore.Managers.Record
     {
         public RecordHead header;
         public RecordTableInfo tableInfo;
-        public bool Decode(ref ReadOnlySpan<byte> buffer)
+        public bool Decode(ReadOnlySpan<byte> buffer)
         {
             header = new RecordHead();
-            header.Decode(ref buffer);
+            header.Decode(buffer);
             tableInfo = new RecordTableInfo();
-            tableInfo.Decode(ref buffer);
+            tableInfo.Decode(buffer);
             while (buffer.Length > 0)
             {
                 RecordDataHeader ph = buffer.MoveReadStruct<RecordDataHeader>();
@@ -315,7 +315,7 @@ namespace SgsCore.Managers.Record
                 if(ph.id == 21209)
                 {
                     PubGsCMoveCard mc = new PubGsCMoveCard();
-                    mc.Decode(ref data);
+                    mc.Decode(data);
                 }
                 buffer.Move(ph.length);
                 Console.WriteLine(ph.id);
@@ -324,7 +324,7 @@ namespace SgsCore.Managers.Record
             return true;
         }
 
-        public Span<byte> Encode()
+        public void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }

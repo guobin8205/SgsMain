@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -53,7 +54,11 @@ namespace SgsCore.Network
         /// <summary>
         /// 创建指定容量空数据的缓存对象
         /// </summary>
-        public Buffer(long capacity) { _data = new byte[capacity]; _size = 0; _offset = 0; }
+        public Buffer(long capacity) {
+            _data = new byte[capacity]; 
+            _size = 0; 
+            _offset = 0; 
+        }
 
         #region 缓存操作方法
         /// <summary>

@@ -9,7 +9,8 @@ namespace SgsCore.Network.ProtocolsNew
 {
     public interface IProtocol
     {
-        Span<byte> Encode();
-        bool Decode(ref ReadOnlySpan<byte> buffer);
+        void Encode(Span<byte> buffer);
+
+        bool Decode(ReadOnlySpan<byte> buffer);
     }
 }

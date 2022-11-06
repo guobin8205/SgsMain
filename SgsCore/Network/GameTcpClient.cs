@@ -24,7 +24,7 @@ namespace SgsCore.Network
         public GameTcpClient(string address, int port) : base(address, port) 
         {
             this.OnHandleReceivedData = this.HandleReceivedData;
-            this._encryptProcessor = new AesEncryptProcessor();
+            //this._encryptProcessor = new AesEncryptProcessor();
         }
 
         public void DisconnectAndStop()
@@ -67,7 +67,7 @@ namespace SgsCore.Network
 
             var buffer = receiveBuffer.AsReadOnlySpan(HEADER_DATA_LENGTH, datalen);
             SsClientVersionNtf ssClientVersionNtf = new SsClientVersionNtf();
-            ssClientVersionNtf.Decode(ref buffer);
+            ssClientVersionNtf.Decode(buffer);
 
             receiveBuffer.RemoveAndAdjust(0, header.Value.size);
 

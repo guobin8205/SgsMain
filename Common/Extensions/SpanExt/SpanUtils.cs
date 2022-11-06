@@ -1,5 +1,6 @@
 ﻿using Common.Helpers;
 using System;
+using System.Data;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1142,7 +1143,7 @@ namespace Common.Extensions.SpanExt
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Byte[] MoveReadBytes(ref ReadOnlySpan<byte> span, int length)
+        public static unsafe byte[] MoveReadBytes(ref ReadOnlySpan<byte> span, int length)
         {
             var ret = span.Slice(0, length).ToArray();
 
@@ -1195,9 +1196,13 @@ namespace Common.Extensions.SpanExt
                     length = 1 + datalen;
                     break;
             }
-            var ret = span.Slice(0, datalen).ToArray();
             span = span.Slice(length);
+#if (NET5_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER) 
+            return enc.GetString(span);
+#else
+            var ret = span.Slice(0, datalen).ToArray();
             return enc.GetString(ret);
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1216,24 +1221,41 @@ namespace Common.Extensions.SpanExt
                     length = (int)SpanUtils.MoveReadSByte(ref span, out _);
                     break;
             }
+#if (NET5_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
+            string ret = enc.GetString(span);
+            span = span.Slice(length);
+            return ret;
+#else
             var ret = span.Slice(0, length).ToArray();
             span = span.Slice(length);
             return enc.GetString(ret);
+#endif
         }
 
         public static unsafe string MoveReadFixedString(ref ReadOnlySpan<byte> span, int length, Encoding enc)
         {
+#if (NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
             var ret = span.Slice(0, length).ToArray();
             span = span.Slice(length);
             return enc.GetString(ret);
-        }
+#else
+            var ret = span.Slice(0, length).ToArray();
+            span = span.Slice(length);
+            return enc.GetString(ret);
+#endif
+        } 
 
         public static unsafe string MoveReadFixedString(ref Span<byte> span, int length, Encoding enc)
         {
+#if (NET5_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
+            string ret = enc.GetString(span);
+            span = span.Slice(length);
+            return ret;
+#else
             var ret = span.Slice(0, length).ToArray();
             span = span.Slice(length);
-            //enc.GetString(ret);
-            return "";
+            return enc.GetString(ret);
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1619,8 +1641,12 @@ namespace Common.Extensions.SpanExt
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void MoveWriteFixString(ref Span<byte> span, in string value, int length, Encoding enc)
         {
-            Span<byte> buffer = stackalloc byte[length];
-            buffer.Write(enc.GetBytes(value));
+            
+#if (NET5_0_OR_GREATER || NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER) 
+            enc.GetBytes(value, span);
+#else
+            SpanUtils.Write(span, enc.GetBytes(value));
+#endif
             span = span.Slice(length);
         }
 

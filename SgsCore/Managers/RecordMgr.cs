@@ -24,7 +24,7 @@ namespace SgsCore.Managers
         public static void ReadRecord(ReadOnlySpan<byte> buff)
         {
             RecordData recordData = new RecordData();
-            recordData.Decode(ref buff);
+            recordData.Decode(buff);
         }
     }
 }

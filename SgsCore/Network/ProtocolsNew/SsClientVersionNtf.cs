@@ -8,17 +8,20 @@ using System.Threading.Tasks;
 
 namespace SgsCore.Network.ProtocolsNew
 {
-    internal class SsClientVersionNtf : ProtocolBase
+    [Serializable]
+    public class SsClientVersionNtf : ProtocolBase
     {
-        private uint version;
-        private uint version_limit;
-        private bool enable_pb;
-        public override Span<byte> Encode()
+        #region 协议编码顺序
+        public uint version { get; set; }
+        public uint version_limit { get; set; }
+        public bool enable_pb { get; set; }
+        #endregion
+
+        public override void Encode(Span<byte> buffer)
         {
-            return null;
         }
 
-        public override bool Decode(ref ReadOnlySpan<byte> buffer)
+        public override bool Decode(ReadOnlySpan<byte> buffer)
         {
             version = buffer.MoveReadUInt();
             version_limit = buffer.MoveReadUInt();

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SgsCore.Network.ProtocolsNew.Game
 {
+    [Serializable]
     public class PubGsCMoveCard : ProtocolBase
     {
         /// <summary>
@@ -51,7 +52,7 @@ namespace SgsCore.Network.ProtocolsNew.Game
         /// </summary>
         public List<uint> data = new List<uint>();
 
-        public override bool Decode(ref ReadOnlySpan<byte> buffer)
+        public override bool Decode(ReadOnlySpan<byte> buffer)
         {
             fromZone = buffer.MoveReadByte();
             toZone = buffer.MoveReadByte();
@@ -72,7 +73,7 @@ namespace SgsCore.Network.ProtocolsNew.Game
             return true;
         }
 
-        public override Span<byte> Encode()
+        public override void Encode(Span<byte> buffer)
         {
             throw new NotImplementedException();
         }
