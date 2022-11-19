@@ -552,7 +552,6 @@ namespace SgsCore.Network.Serializer
                 return ClassInfo<T>.Instance;
 
             Type t = typeof(T);
-            
             var props = t.GetProperties(
                 BindingFlags.Instance |
                 BindingFlags.Public |

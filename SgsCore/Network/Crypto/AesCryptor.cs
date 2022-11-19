@@ -603,12 +603,12 @@ namespace SgsCore.Network.Crypto
             0x4F, 0x13, 0x07 };
         #endregion
 
-        private static uint GETU32(ReadOnlySpan<byte> str)
+        private static uint GETU32(byte[] str, int offset)
         {
-            return (uint)str[0] << 24 ^ (uint)str[1] << 16 ^ (uint)str[2] << 8 ^ (uint)str[3];
+            return (uint)str[offset+0] << 24 ^ (uint)str[offset + 1] << 16 ^ (uint)str[offset + 2] << 8 ^ (uint)str[offset + 3];
         }
 
-        public static void AES_encrypt(ReadOnlySpan<byte> indata, byte[] outdata, byte[] key)
+        public static void AES_encrypt(byte[] indata, byte[] outdata, byte[] key)
         {
             uint s0, s1, s2, s3, t0, t1, t2, t3;
             int r;
@@ -616,10 +616,10 @@ namespace SgsCore.Network.Crypto
 		    * map byte array block to cipher state
 		    * and add initial round key:
 		    */
-            s0 = GETU32(indata.Slice(0, 4)) ^ rk[0];
-            s1 = GETU32(indata.Slice(4, 4)) ^ rk[1];
-            s2 = GETU32(indata.Slice(8, 4)) ^ rk[2];
-            s3 = GETU32(indata.Slice(12, 4)) ^ rk[3];
+            s0 = GETU32(indata, 0) ^ rk[0];
+            s1 = GETU32(indata, 4) ^ rk[1];
+            s2 = GETU32(indata, 8) ^ rk[2];
+            s3 = GETU32(indata, 12) ^ rk[3];
 
             /**
             * Nr - 1 full rounds:
@@ -829,7 +829,7 @@ namespace SgsCore.Network.Crypto
                         AES_encrypt(ivec, ivec, key);
                         while (len-- > 0)
                         {
-                            dstdata[dstoffset + n] = ivec[n] ^= srcdata[srcoffset + n];
+                            dstdata[dstoffset + n + j * 16] = ivec[n] ^= srcdata[srcoffset + n + j * 16];
                             ++n;
                         }
                     }
@@ -871,8 +871,8 @@ namespace SgsCore.Network.Crypto
                         AES_encrypt(ivec, ivec, key);
                         while (len-- > 0)
                         {
-                            byte c = srcdata[srcoffset + n];
-                            dstdata[dstoffset + n] = (byte)(ivec[n] ^ c);
+                            byte c = srcdata[srcoffset + n + j * 16];
+                            dstdata[dstoffset + n + j * 16] = (byte)(ivec[n] ^ c);
                             ivec[n] = c;
                             ++n;
                         }
@@ -916,7 +916,7 @@ namespace SgsCore.Network.Crypto
             AES_cfb_decrypt(srcdata, srcoffset, dstdata, dstoffset, length, _gszDefalutAesKey, _ivec);
         }
 
-        private static int AES_set_encrypt_key(ReadOnlySpan<byte> userKey, int bits)
+        private static int AES_set_encrypt_key(byte[] userKey, int bits)
         {
             if (rk != null)
                 return 0;
@@ -939,10 +939,10 @@ namespace SgsCore.Network.Crypto
                 rounds = 14;
 
 
-            rk[0] = GETU32(userKey.Slice(0, 4));
-            rk[1] = GETU32(userKey.Slice(4, 4));
-            rk[2] = GETU32(userKey.Slice(8, 4));
-            rk[3] = GETU32(userKey.Slice(12, 4));
+            rk[0] = GETU32(userKey, 0);
+            rk[1] = GETU32(userKey, 4);
+            rk[2] = GETU32(userKey, 8);
+            rk[3] = GETU32(userKey, 12);
             if (bits == 128)
             {
                 while (true)
@@ -963,8 +963,8 @@ namespace SgsCore.Network.Crypto
                     }
                 }
             }
-            rk[4] = GETU32(userKey.Slice(16, 4));
-            rk[5] = GETU32(userKey.Slice(20, 4));
+            rk[4] = GETU32(userKey, 16);
+            rk[5] = GETU32(userKey, 20);
             if (bits == 192)
             {
                 while (true)
@@ -987,8 +987,8 @@ namespace SgsCore.Network.Crypto
                     rk[11 + i * 6] = rk[5 + i * 6] ^ rk[10 + i * 6];
                 }
             }
-            rk[6] = GETU32(userKey.Slice(24, 4));
-            rk[7] = GETU32(userKey.Slice(28, 4));
+            rk[6] = GETU32(userKey, 24);
+            rk[7] = GETU32(userKey, 28);
             if (bits == 256)
             {
                 while (true)

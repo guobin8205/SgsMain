@@ -27,9 +27,8 @@ internal class Program
     private static void Main(string[] args)
     {
 
-
-        //var summary = BenchmarkRunner.Run<BenchmarkAes>();
-        //return;
+        var summary = BenchmarkRunner.Run<BenchTestStructVsClass>();
+        return;
 
         //GC.Collect();
         //GC.WaitForPendingFinalizers();
@@ -47,7 +46,6 @@ internal class Program
         //login2.Encode(buffer);
         //login2.Decode(buffer);
 
-        //0F62000050000000000000006B696E676C7130303100000000000000000000000000000000000000000000000000000000000000000000000000000000000000E3AD1200000000001300000000000000
 
         var serializer = new NetSerializer();
         SgsPhoneshopGetuserGoodsReq req = new SgsPhoneshopGetuserGoodsReq();
@@ -58,6 +56,17 @@ internal class Program
         req.goodsbaseid = 0;
         var bytes = serializer.Serialize<SgsPhoneshopGetuserGoodsReq>(req);
 
+        byte[] testdata = new byte[] { 245, 97, 165, 34, 238, 239, 63, 237, 75 };
+        
+        byte[] outdata2 = new byte[9];
+
+        string hexstring = "736773646576303100000000000000000000000000000000000000000000000000000000000000CC00000000000000006230636233333666613231623231356433343234353865653666623736393661CC";
+        byte[] senddata1 = ByteHexHelper.HexToByte(hexstring);
+        byte[] outdata = new byte[senddata1.Length];
+
+        AesCryptor.Encrypt(senddata1, outdata, senddata1.Length);
+
+
         int nlen = bytes.Length + 12;
         var buffer = new byte[nlen];
         Span<byte> bufferSpan = new Span<byte>(buffer);
@@ -67,7 +76,7 @@ internal class Program
         bufferSpan.MoveWrite(bytes);
 
 
-        string hexstring = "1E6200007D00000000000000707966323030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001B756600000000003339303130323230323231313032313934393531333536303830353237380000F40100000145A106000100000000000000E1FD1C00";
+        //string hexstring = "736773646576303100000000000000000000000000000000000000000000000000000000000000CC00000000000000006230636233333666613231623231356433343234353865653666623736393661CC";
         byte[] senddata = ByteHexHelper.HexToByte(hexstring);
         Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(req));
         //Console.WriteLine(ByteHexHelper.ByteToHex(buffer));
